@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Roadmap — From CRUD to Prod</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #e8ff47;
+    --text: #e8e8f0;
+    --muted: #5a5a7a;
+    --basic: #47ff9c;
+    --medium: #47c4ff;
+    --advanced: #ff6b47;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+  header {
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+  .legend {
+    display: flex;
+    gap: 24px;
+    padding: 20px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot.basic { background: var(--basic); box-shadow: 0 0 6px var(--basic); }
+  .dot.medium { background: var(--medium); box-shadow: 0 0 6px var(--medium); }
+  .dot.advanced { background: var(--advanced); box-shadow: 0 0 6px var(--advanced); }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    padding: 24px 0 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 14px;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,255,71,0.05);
+  }
+
+  .tracker {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 100;
+  }
+  .tracker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .tracker-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  .phase {
+    margin: 44px 0;
+    animation: fadeUp 0.35s ease both;
+  }
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .phase-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .phase-meta {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 10px;
+  }
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .concept-card.basic::before { background: var(--basic); }
+  .concept-card.medium::before { background: var(--medium); }
+  .concept-card.advanced::before { background: var(--advanced); }
+  .concept-card:hover { transform: translateY(-1px); }
+  .concept-card.basic:hover { border-color: var(--basic); background: rgba(71,255,156,0.04); }
+  .concept-card.medium:hover { border-color: var(--medium); background: rgba(71,196,255,0.04); }
+  .concept-card.advanced:hover { border-color: var(--advanced); background: rgba(255,107,71,0.04); }
+  .concept-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .concept-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .level-badge {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .basic .level-badge { background: rgba(71,255,156,0.12); color: var(--basic); border: 1px solid rgba(71,255,156,0.3); }
+  .medium .level-badge { background: rgba(71,196,255,0.12); color: var(--medium); border: 1px solid rgba(71,196,255,0.3); }
+  .advanced .level-badge { background: rgba(255,107,71,0.12); color: var(--advanced); border: 1px solid rgba(255,107,71,0.3); }
+  .concept-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .concept-why {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+  .concept-card.expanded .concept-why { display: block; }
+  .expand-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    pointer-events: none;
+  }
+  .concept-card.expanded .expand-icon { transform: rotate(180deg); }
+
+  .stats {
+    display: flex;
+    gap: 32px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--accent);
+  }
+  .stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 600px) {
+    .tracker { display: none; }
+    .concept-grid { grid-template-columns: 1fr; }
+    h1 { letter-spacing: -1px; }
+    .phase-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tracker" id="tracker"></div>
+
+<div class="container">
+  <header>
+    <div class="header-tag">// system design roadmap — first principles edition</div>
+    <h1>CRUD<br>to <span>PROD</span></h1>
+    <p class="header-sub">Every concept you need. Ordered by when you need it. Click any card to see why it matters — not just what it is.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="dot basic"></div>Basic — start here, week 1–3</div>
+      <div class="legend-item"><div class="dot medium"></div>Medium — month 2–3</div>
+      <div class="legend-item"><div class="dot advanced"></div>Advanced — month 4+</div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <input class="search-input" type="text" placeholder="Search concepts..." id="searchInput">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="basic">Basic</button>
+    <button class="filter-btn" data-filter="medium">Medium</button>
+    <button class="filter-btn" data-filter="advanced">Advanced</button>
+  </div>
+
+  <div id="roadmap"></div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num" id="totalCount">0</span><span class="stat-label">Total Concepts</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--basic)" id="basicCount">0</span><span class="stat-label">Basic</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--medium)" id="medCount">0</span><span class="stat-label">Medium</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--advanced)" id="advCount">0</span><span class="stat-label">Advanced</span></div>
+  </div>
+
+  <footer>
+    Build the URL shortener. Evolve it through every phase.<br>
+    The struggle is the learning. Don't skip stages. Don't let AI write what you haven't felt yet.
+  </footer>
+</div>
+
+<script>
+const phases = [
+  {
+    id:"p1", num:"Phase 01", title:"The Spine — How Computers Actually Work", timeline:"Week 1–2",
+    concepts:[
+      {name:"How HTTP Works",level:"basic",desc:"Request/response cycle, verbs, status codes, headers, keep-alive.",why:"Every web app runs on HTTP. If you don't know what a 200 vs 503 means at the protocol level, you can't debug production. This is the alphabet of the web."},
+      {name:"TCP/IP & DNS Basics",level:"basic",desc:"How data actually travels from browser to server. Packets, handshakes, resolution.",why:"When your app is 'down', is it DNS? Network? App? You need to know the layers to know where to look. Ping vs curl vs dig — each tests a different layer."},
+      {name:"Processes & Threads",level:"basic",desc:"How your OS runs programs, concurrency basics, context switching.",why:"Your web server handles many requests at once. Understanding processes/threads explains why Node.js behaves differently from Java and why a CPU-heavy task blocks your whole server."},
+      {name:"Memory — Heap vs Stack",level:"basic",desc:"Where data lives when your program runs. GC basics.",why:"Memory leaks are a real production killer. You need to know what lives on heap vs stack to understand why your service crashes at 2am after running fine all day."},
+      {name:"File I/O & Disk",level:"basic",desc:"How programs read/write to disk. Syscalls, buffering, blocking vs non-blocking.",why:"Logging, databases, file uploads — all touch disk. Disk is 1000x slower than memory. This single fact shapes every architecture decision about what to cache."},
+      {name:"Client–Server Model",level:"basic",desc:"The fundamental separation of concerns in networked systems.",why:"Everything you build is a variation of this. Understanding it cleanly lets you reason about where logic should live — in the client, server, or a layer between them."},
+    ]
+  },
+  {
+    id:"p2", num:"Phase 02", title:"The Spine With Flesh — Your First Real App", timeline:"Week 2–4",
+    concepts:[
+      {name:"CRUD & REST Principles",level:"basic",desc:"Create, Read, Update, Delete. Resource-oriented API design, statelessness.",why:"This is your baseline. Every production system has CRUD at its core. Know it so well you can design a clean REST API in your sleep."},
+      {name:"Raw SQL — No ORM First",level:"basic",desc:"SELECT, JOIN, WHERE, GROUP BY, EXPLAIN. Writing queries manually.",why:"ORMs abstract pain away. You need to feel the pain first. Writing raw SQL teaches you what's actually happening and makes you dangerous when you eventually use an ORM."},
+      {name:"Indexes & Query Plans",level:"basic",desc:"Why queries slow down at scale, B-tree indexes, EXPLAIN output.",why:"A table with 100k rows with no index on the WHERE column will destroy performance. You'll only truly understand indexes after watching a query go from 4 seconds to 4ms."},
+      {name:"Relational Data Modeling",level:"basic",desc:"Normalization (1NF-3NF), foreign keys, many-to-many via join tables.",why:"Your schema design at day 1 haunts you at month 6. Getting relationships right early saves enormous migration pain. Bad schema = bad everything downstream."},
+      {name:"HTTP Status Codes (deep)",level:"basic",desc:"2xx success, 3xx redirect, 4xx client error, 5xx server error families.",why:"When your client gets a 502, do you know if the problem is your app, your proxy, or your upstream? Status codes are your first diagnostic signal in any incident."},
+      {name:"Environment Variables & Config",level:"basic",desc:"Keeping secrets out of code. .env files, 12-factor app config.",why:"Hardcoded secrets are how companies get hacked. Database passwords in git repos are a real incident type. This is non-negotiable from day one."},
+    ]
+  },
+  {
+    id:"p3", num:"Phase 03", title:"The Nervous System — Observability", timeline:"Week 3–5",
+    concepts:[
+      {name:"Structured Logging",level:"basic",desc:"JSON logs with context — timestamp, request ID, user ID, latency, error.",why:"console.log() is debugging in the dark. Structured logs let you filter, search, and correlate production incidents in seconds. The difference between 4-hour incidents and 10-minute ones."},
+      {name:"Log Levels",level:"basic",desc:"DEBUG, INFO, WARN, ERROR, FATAL — semantics of each.",why:"Log everything at DEBUG and you flood storage. Log nothing and you're blind. Level discipline is operational maturity that separates professional systems from hobby projects."},
+      {name:"Health Check Endpoints",level:"basic",desc:"/health, /ready endpoints. Liveness vs readiness distinction.",why:"Load balancers and orchestrators need to know if your app is alive. Health checks are how they find out. Without them, dead instances keep receiving traffic."},
+      {name:"Metrics & Counters",level:"medium",desc:"Request count, latency percentiles (p50/p95/p99), error rate, saturation.",why:"Averages lie. p99 latency tells you about your worst users. Tracking these over time lets you see degradation before users file tickets."},
+      {name:"Error Tracking",level:"medium",desc:"Capturing exceptions with full context — stack trace, user, input, env.",why:"Errors in production are invisible without tooling. Error trackers (Sentry-style) show you exactly what broke, for how many users, and with what input."},
+      {name:"Alerting & Thresholds",level:"medium",desc:"When to page, SLOs, error budgets, alert fatigue.",why:"Metrics without alerts are dashboards nobody watches at 3am. Good alerts fire rarely but always matter. Bad alerts train your team to ignore everything."},
+      {name:"Distributed Tracing Concepts",level:"medium",desc:"Trace IDs flowing across service boundaries. Spans, parents, timing.",why:"Once you have 3+ services, a slow request becomes a mystery. Tracing gives you the full story: this request spent 200ms in auth, 1.2s in the database, 50ms serializing."},
+    ]
+  },
+  {
+    id:"p4", num:"Phase 04", title:"The Muscles — Performance", timeline:"Week 4–7",
+    concepts:[
+      {name:"N+1 Query Problem",level:"basic",desc:"Queries that multiply with data volume. The silent performance killer.",why:"The #1 performance bug in any ORM-based app. A page that works fine with 10 rows sends 10,001 queries with 10,000 rows. Find this before your users do."},
+      {name:"Caching Concepts",level:"basic",desc:"Cache-aside pattern, TTL, what to cache vs not, cold starts.",why:"Caching is the single biggest lever for performance. Understanding when to cache, what to cache, and when to invalidate separates senior engineers from juniors."},
+      {name:"Redis Fundamentals",level:"basic",desc:"Key-value, strings, hashes, lists, sorted sets, TTL, pub/sub.",why:"Redis is the most common production cache. Each data structure solves different problems — sorted sets for leaderboards, hashes for sessions, pub/sub for lightweight events."},
+      {name:"Load Testing",level:"basic",desc:"Simulating concurrent traffic with k6 or similar. Finding bottlenecks before users do.",why:"You don't know your system's breaking point until you test it. Do this before launch, not after. Load testing reveals the bottleneck you didn't expect."},
+      {name:"Connection Pooling",level:"medium",desc:"Reusing DB connections across requests. Pool sizing strategy.",why:"Creating a database connection costs 5-10ms. Without pooling, 1000 concurrent users means 1000 new connections. Databases die this way. PgBouncer, HikariCP."},
+      {name:"Cache Invalidation",level:"medium",desc:"TTL strategies, write-through vs write-back, stampede prevention.",why:"Called the hardest problem in CS for a reason. Stale cache causes real bugs. When do you invalidate? How do you prevent a thundering herd when cache expires?"},
+      {name:"CDN Concepts",level:"medium",desc:"Edge caching, asset delivery, geographic PoPs, cache-control headers.",why:"Serving a 2MB image from your origin server for 100k users is expensive and slow. CDNs put content geographically close to users and take load off your servers."},
+    ]
+  },
+  {
+    id:"p5", num:"Phase 05", title:"The Immune System — Resilience", timeline:"Week 6–9",
+    concepts:[
+      {name:"Timeouts",level:"basic",desc:"Every external call needs a maximum wait. Connect timeout vs read timeout.",why:"Without timeouts, one slow dependency hangs your entire server thread indefinitely. A 30-second database query becomes a 30-second user experience for everyone behind it."},
+      {name:"Retries & Exponential Backoff",level:"basic",desc:"Retry failed calls intelligently with growing delay. Jitter to prevent stampedes.",why:"Instant retries hammer already-struggling services. Exponential backoff gives systems breathing room. With jitter, 1000 clients don't all retry at the same millisecond."},
+      {name:"Idempotency",level:"medium",desc:"Same request = same result regardless of how many times it's sent.",why:"Networks fail and retries happen. If your 'charge payment' endpoint isn't idempotent, users get double-charged on retry. Idempotency keys solve this at the HTTP layer."},
+      {name:"Circuit Breaker Pattern",level:"medium",desc:"Stop calling a failing service. States: closed, open, half-open.",why:"If your payment service is down, failing fast is better than waiting. Circuit breakers prevent one slow service from cascading failures across your entire system."},
+      {name:"Graceful Degradation",level:"medium",desc:"Partial failure = partial feature, not total crash. Fallback strategies.",why:"If your recommendation service fails, your homepage should still load — without recommendations. Design every non-critical dependency to have a fallback path."},
+      {name:"Bulkhead Pattern",level:"advanced",desc:"Thread pool isolation per dependency. One pool's exhaustion can't starve another.",why:"Named after ship compartments. If your image resize service exhausts its thread pool, it shouldn't starve your checkout service. Bulkheads contain blast radius."},
+      {name:"Dead Letter Queues",level:"advanced",desc:"Where messages go when they permanently fail processing. Inspection, replay.",why:"Without DLQs, permanently-failing async jobs silently disappear. DLQs let you inspect what failed, debug why, and replay when you've fixed the root cause."},
+    ]
+  },
+  {
+    id:"p6", num:"Phase 06", title:"The Circulatory System — Async & Events", timeline:"Week 7–10",
+    concepts:[
+      {name:"Sync vs Async Design",level:"basic",desc:"When users must wait vs when work can happen in background.",why:"Sending a welcome email doesn't need to happen before the user sees their dashboard. Async decouples response time from work time. This is the first step to a fast UX."},
+      {name:"Message Queue Concepts",level:"basic",desc:"Producer pushes, consumer pulls. Decoupled, durable, ordered processing.",why:"Queues let services communicate without being tightly coupled. If a consumer goes down, messages wait. If load spikes, messages buffer. This resilience is fundamental."},
+      {name:"Redis Pub/Sub",level:"basic",desc:"Simple fire-and-forget messaging. Non-durable, lightweight.",why:"Good entry point to feel async patterns. Messages don't survive Redis restarts — teaching you what 'durability' means by its absence. Use for non-critical events first."},
+      {name:"BullMQ / RabbitMQ",level:"medium",desc:"Durable queues with acknowledgment, retries, delay, priority.",why:"When you need guaranteed delivery — payments, emails, webhooks — you need durable queues. A job acknowledged only when successfully completed, retried on failure."},
+      {name:"Event-Driven Architecture",level:"medium",desc:"Services emit events, others subscribe. No direct coupling.",why:"Service A calls Service B directly = tight coupling. Service A emits 'OrderPlaced' event = loose coupling. Billing, inventory, and email can all react independently."},
+      {name:"Kafka Fundamentals",level:"advanced",desc:"Distributed commit log. Partitions, consumer groups, offsets, retention.",why:"When you need millions of events/second or want to replay history, Kafka is the answer. Your consumers can fail and catch up. Every major tech company uses this."},
+      {name:"At-Least-Once vs Exactly-Once",level:"advanced",desc:"Message delivery guarantees and their real-world tradeoffs.",why:"Exactly-once is nearly impossible in distributed systems. Understanding this forces you to design idempotent consumers that handle duplicate messages safely."},
+    ]
+  },
+  {
+    id:"p7", num:"Phase 07", title:"The Skeleton — Infrastructure", timeline:"Week 8–12",
+    concepts:[
+      {name:"Docker & Containers",level:"basic",desc:"Packaging app + runtime + dependencies together. Image vs container.",why:"Containers are the universal unit of deployment. 'Works on my machine' is solved by making the machine part of the package. Learn this before any cloud service."},
+      {name:"Docker Compose",level:"basic",desc:"Running multi-container environments locally with one command.",why:"Your app + Postgres + Redis running locally with one command, isolated from your host system. This is how professional teams avoid environment conflicts."},
+      {name:"Linux Command Line Basics",level:"basic",desc:"File system, permissions, ps, top, netstat, grep, curl, ssh.",why:"Production runs on Linux. When your server is unhealthy, you SSH in and use these commands. There's no GUI to save you. This is survival knowledge."},
+      {name:"Nginx & Reverse Proxy",level:"medium",desc:"Sitting in front of your app — routing, SSL termination, static files.",why:"Your app server shouldn't be exposed directly to the internet. Nginx handles TLS, serves static assets without hitting your app, and routes to multiple upstream services."},
+      {name:"CI/CD Pipelines",level:"medium",desc:"Automated test, lint, build, deploy on every git push.",why:"Manual deployments are how bugs reach production. CI enforces quality gates before merging. CD makes releases boring, repeatable, and reversible."},
+      {name:"Kubernetes Concepts",level:"advanced",desc:"Container orchestration. Pods, deployments, services, ingress, HPA.",why:"At scale, managing 50 containers manually is impossible. K8s automates scheduling, self-healing, rolling deploys, and auto-scaling. Industry standard at every serious company."},
+      {name:"Infrastructure as Code",level:"advanced",desc:"Terraform/Pulumi — infra defined in version-controlled files.",why:"Clicking around cloud consoles is manual, error-prone, and not reproducible. IaC means your infrastructure is auditable, reviewable, and disaster-recoverable."},
+    ]
+  },
+  {
+    id:"p8", num:"Phase 08", title:"The Blood — Databases Deep", timeline:"Week 8–14",
+    concepts:[
+      {name:"ACID Properties",level:"basic",desc:"Atomicity, Consistency, Isolation, Durability — what they guarantee.",why:"These are the promises a relational database makes to you. Without ACID, you can't safely handle money, inventory, or any state where partial writes are catastrophic."},
+      {name:"Database Transactions",level:"basic",desc:"BEGIN, COMMIT, ROLLBACK. Grouping operations atomically.",why:"Transfer money: debit account A, credit account B. If the credit fails, the debit must roll back. Transactions make this safe. Without them, you lose money or create it from nothing."},
+      {name:"Isolation Levels",level:"medium",desc:"Read uncommitted, read committed, repeatable read, serializable.",why:"Different isolation levels trade consistency for performance. Dirty reads vs phantom reads — choosing the wrong level causes subtle data corruption bugs that are hard to reproduce."},
+      {name:"CAP Theorem",level:"medium",desc:"Consistency, Availability, Partition tolerance — you can only guarantee two.",why:"Every distributed database makes this tradeoff explicitly. Understanding CAP explains why MongoDB, Cassandra, and Postgres make fundamentally different choices."},
+      {name:"Read Replicas",level:"medium",desc:"Secondary copies of your DB serving read traffic. Replication lag.",why:"Your primary handles writes. At scale, reads overwhelm it. Replicas distribute read load. Understanding replication lag is critical — replicas can be slightly behind."},
+      {name:"NoSQL Tradeoffs",level:"medium",desc:"Document, key-value, wide-column, graph — when each fits vs SQL.",why:"MongoDB isn't better than Postgres — it's different. Understanding these tradeoffs means you pick the right tool instead of the trendy one and regret it at scale."},
+      {name:"Database Sharding",level:"advanced",desc:"Horizontal partitioning across multiple DB instances. Shard keys, hotspots.",why:"When one machine can't hold all your data. Sharding adds enormous operational complexity. Understand it so you know when you actually need it — which is rarely at first."},
+    ]
+  },
+  {
+    id:"p9", num:"Phase 09", title:"The Immune System II — Security", timeline:"Week 10–14",
+    concepts:[
+      {name:"OWASP Top 10",level:"basic",desc:"SQL injection, XSS, broken auth, IDOR, security misconfiguration.",why:"These are the attacks that actually hit real systems. Every developer must know them. Ignorance here isn't just a gap — it's negligence to your users."},
+      {name:"Authentication vs Authorization",level:"basic",desc:"Who are you (authn) vs what can you do (authz). Always separate concerns.",why:"Conflating these creates security holes. Auth answers identity. Authz answers permissions. They change at different rates and should be designed separately."},
+      {name:"Input Validation & Sanitization",level:"basic",desc:"Never trust user input. Validate type, length, format, range. Always.",why:"SQL injection, XSS, buffer overflows — all stem from trusting user input. Parameterized queries, schema validation, output encoding. These are non-negotiable."},
+      {name:"TLS & HTTPS",level:"basic",desc:"Encrypting data in transit. Certificates, TLS handshake, HSTS.",why:"Plain HTTP in production means anyone on the network can read your users' data. TLS is table stakes. Understanding it helps you debug certificate errors in production."},
+      {name:"JWT & Session Auth",level:"basic",desc:"Stateless tokens vs server-side sessions. Signing, expiry, refresh tokens.",why:"JWTs are stateless and scalable but can't be revoked easily. Sessions are revocable but need shared storage. Each tradeoff matters for your specific threat model."},
+      {name:"Rate Limiting",level:"medium",desc:"Limiting requests per IP/user/key. Sliding window, token bucket algorithms.",why:"Without rate limiting, one bad actor takes down your API for everyone. This is your first line of defense against brute-force attacks, scraping, and accidental DDoS."},
+      {name:"Secrets Management",level:"medium",desc:"Vault, AWS Secrets Manager — centralized, rotatable, audited secrets.",why:"Secrets in .env files get committed. Secrets hardcoded get leaked. Production secrets need rotation, access logging, and revocation — a dedicated secrets system gives you this."},
+    ]
+  },
+  {
+    id:"p10", num:"Phase 10", title:"The Full Body — Scale Architecture", timeline:"Month 4–6",
+    concepts:[
+      {name:"Horizontal vs Vertical Scaling",level:"basic",desc:"More machines (horizontal) vs bigger machine (vertical). When each applies.",why:"Vertical scaling is fast but has a hard ceiling. Horizontal scales indefinitely but requires stateless service design. This choice determines your entire architecture strategy."},
+      {name:"Load Balancing",level:"medium",desc:"Distributing traffic across instances. Round-robin, least-connections, consistent hash.",why:"One server has a ceiling. Load balancers let you scale horizontally and enable zero-downtime deployments via rolling updates. This is how Netflix runs on thousands of boxes."},
+      {name:"Stateless Service Design",level:"medium",desc:"Each request is self-contained. No server-side state between requests.",why:"Stateful services can only run as one instance. Stateless services can run as 50 instances behind a load balancer. Statelessness is the prerequisite to horizontal scale."},
+      {name:"API Gateway Pattern",level:"medium",desc:"Single entry point. Auth, rate limiting, routing, request transformation.",why:"Without a gateway, every service duplicates auth, logging, and rate limiting. A gateway centralizes cross-cutting concerns and gives you one place to enforce policies."},
+      {name:"Microservices vs Monolith",level:"medium",desc:"When to split, when to stay together. Conway's Law. The distribution tax.",why:"Microservices solve team autonomy problems, not software problems. Most startups should start monolithic. The operational overhead of microservices is real — know when it's worth it."},
+      {name:"Consistent Hashing",level:"advanced",desc:"Distributing keys across nodes with minimal reshuffling when topology changes.",why:"Used in every distributed cache and database. When a node joins or leaves, consistent hashing minimizes how much data needs to move — critical for cache efficiency at scale."},
+      {name:"CQRS",level:"advanced",desc:"Command Query Responsibility Segregation — separate read and write models.",why:"When reads and writes have fundamentally different access patterns and scaling needs, CQRS lets you optimize each independently. Complex but powerful for high-read systems."},
+      {name:"Saga Pattern",level:"advanced",desc:"Distributed transactions via compensating actions. Choreography vs orchestration.",why:"The practical alternative to 2PC for distributed transactions. Each step has an undo operation. If hotel booking fails, cancel the flight. Real e-commerce systems run on this."},
+      {name:"Event Sourcing",level:"advanced",desc:"State as a sequence of events, not current values. Full audit trail.",why:"Complete history, time travel, replay. If your bank account is a list of transactions not a balance, you can replay to any point. Complex but powerful wherever history matters."},
+      {name:"Service Discovery",level:"advanced",desc:"How services find each other dynamically when IPs change. Consul, K8s DNS.",why:"In Kubernetes, pod IPs change on every restart. Service discovery lets services find each other by name instead of IP. Without it, distributed systems fall apart."},
+    ]
+  }
+];
+
+function renderRoadmap(filter='all', search='') {
+  const roadmap = document.getElementById('roadmap');
+  const tracker = document.getElementById('tracker');
+  roadmap.innerHTML = '';
+  tracker.innerHTML = '';
+
+  let total=0, basic=0, med=0, adv=0;
+  const phaseEls = [];
+
+  phases.forEach((phase, pi) => {
+    const filtered = phase.concepts.filter(c => {
+      const lm = filter==='all' || c.level===filter;
+      const sm = !search || c.name.toLowerCase().includes(search) || c.desc.toLowerCase().includes(search) || (c.why && c.why.toLowerCase().includes(search));
+      return lm && sm;
+    });
+    if (!filtered.length) return;
+
+    total += filtered.length;
+    filtered.forEach(c => { if(c.level==='basic') basic++; else if(c.level==='medium') med++; else adv++; });
+
+    const el = document.createElement('div');
+    el.className = 'phase';
+    el.id = phase.id;
+    el.style.animationDelay = `${pi*0.04}s`;
+    el.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-num">${phase.num}</span>
+        <span class="phase-title">${phase.title}</span>
+        <span class="phase-meta">${phase.timeline}</span>
+      </div>
+      <div class="concept-grid">
+        ${filtered.map(c=>`
+          <div class="concept-card ${c.level}" onclick="this.classList.toggle('expanded')">
+            <div class="concept-top">
+              <span class="concept-name">${c.name}</span>
+              <span class="level-badge">${c.level}</span>
+            </div>
+            <div class="concept-desc">${c.desc}</div>
+            <div class="concept-why">↳ <strong>Why it matters:</strong> ${c.why}</div>
+            <span class="expand-icon">▾</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    roadmap.appendChild(el);
+    phaseEls.push(el);
+
+    const dot = document.createElement('div');
+    dot.className = 'tracker-dot';
+    dot.title = phase.title;
+    dot.onclick = () => el.scrollIntoView({behavior:'smooth',block:'start'});
+    tracker.appendChild(dot);
+  });
+
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('basicCount').textContent = basic;
+  document.getElementById('medCount').textContent = med;
+  document.getElementById('advCount').textContent = adv;
+
+  if (phaseEls.length) {
+    const dots = tracker.querySelectorAll('.tracker-dot');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const i = phaseEls.indexOf(e.target);
+          dots.forEach((d,j) => d.classList.toggle('active', i===j));
+        }
+      });
+    }, {threshold:0.25});
+    phaseEls.forEach(e => obs.observe(e));
+  }
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRoadmap(btn.dataset.filter, document.getElementById('searchInput').value.toLowerCase());
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  const f = document.querySelector('.filter-btn.active').dataset.filter;
+  renderRoadmap(f, e.target.value.toLowerCase());
+});
+
+renderRoadmap();
+</script>
+</body>
+</html>
