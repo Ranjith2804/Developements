@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Mastery — Knowledge Map & Roadmap</title>
+    <meta name="description"
+        content="Two resources fused into one: an ordered Backend Learning Roadmap and a deep-dive Knowledge Map.">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Theme: apply before paint to avoid flash -->
+    <script src="js/theme.js"></script>
+</head>
+
+<body>
+
+    <!-- Skip to content (accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Mobile hamburger toggle -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false"
+        aria-controls="sidebar">
+        <span class="hamburger-line" aria-hidden="true"></span>
+        <span class="hamburger-line" aria-hidden="true"></span>
+        <span class="hamburger-line" aria-hidden="true"></span>
+    </button>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- Side scroll tracker -->
+    <nav class="tracker" id="tracker" aria-label="Section progress tracker"></nav>
+
+    <div class="app">
+
+        <!-- ── SIDEBAR ── -->
+        <nav class="sidebar" id="sidebar" aria-label="Site navigation">
+            <div class="sidebar-top">
+                <h2>Navigation</h2>
+                <label for="search" class="sr-only">Search topics</label>
+                <input type="search" id="search" placeholder="Search topics..." autocomplete="off"
+                    aria-label="Search topics">
+                <div class="view-switcher" role="group" aria-label="View switcher">
+                    <button class="view-btn active" data-view="roadmap" aria-pressed="true"
+                        onclick="switchView('roadmap', this)">Roadmap</button>
+                    <button class="view-btn" data-view="map" aria-pressed="false"
+                        onclick="switchView('map', this)">Knowledge Map</button>
+                </div>
+            </div>
+
+            <!-- Roadmap Nav -->
+            <div id="roadmap-nav" role="list" aria-label="Roadmap phases">
+                <div class="nav-section-label" role="presentation">Foundation</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp1')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp1')"><span class="nav-num"
+                        aria-hidden="true">01</span> The Spine</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp2')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp2')"><span class="nav-num"
+                        aria-hidden="true">02</span> First Real App</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp3')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp3')"><span class="nav-num"
+                        aria-hidden="true">03</span> Observability</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp4')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp4')"><span class="nav-num"
+                        aria-hidden="true">04</span> Performance</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp5')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp5')"><span class="nav-num"
+                        aria-hidden="true">05</span> Resilience</div>
+                <div class="nav-section-label" role="presentation">Systems</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp6')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp6')"><span class="nav-num"
+                        aria-hidden="true">06</span> Async & Events</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp7')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp7')"><span class="nav-num"
+                        aria-hidden="true">07</span> Infrastructure</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp8')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp8')"><span class="nav-num"
+                        aria-hidden="true">08</span> Databases Deep</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp9')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp9')"><span class="nav-num"
+                        aria-hidden="true">09</span> Security</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp10')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('rp10')"><span class="nav-num"
+                        aria-hidden="true">10</span> Scale Architecture</div>
+            </div>
+
+            <!-- Knowledge Map Nav -->
+            <div id="map-nav" class="hidden" role="list" aria-label="Knowledge map topics">
+                <div class="nav-section-label" role="presentation">Foundation</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t1')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t1')"><span class="nav-num"
+                        aria-hidden="true">01</span> System Design</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t2')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t2')"><span class="nav-num"
+                        aria-hidden="true">02</span> Operating Systems</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t3')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t3')"><span class="nav-num"
+                        aria-hidden="true">03</span> Computer Networks</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t4')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t4')"><span class="nav-num"
+                        aria-hidden="true">04</span> Backend Development</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t5')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t5')"><span class="nav-num"
+                        aria-hidden="true">05</span> DBMS</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t6')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t6')"><span class="nav-num"
+                        aria-hidden="true">06</span> Security</div>
+                <div class="nav-section-label" role="presentation">Protocol & API</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t7')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t7')"><span class="nav-num"
+                        aria-hidden="true">07</span> HTTP Protocol</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t8')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t8')"><span class="nav-num"
+                        aria-hidden="true">08</span> Routing</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t9')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t9')"><span class="nav-num"
+                        aria-hidden="true">09</span> Serialization</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t10')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t10')"><span class="nav-num"
+                        aria-hidden="true">10</span> Auth & Authorization</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t11')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t11')"><span class="nav-num"
+                        aria-hidden="true">11</span> Validation</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t12')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t12')"><span class="nav-num"
+                        aria-hidden="true">12</span> Middleware</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t13')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t13')"><span class="nav-num"
+                        aria-hidden="true">13</span> Request Context</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t14')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t14')"><span class="nav-num"
+                        aria-hidden="true">14</span> Handlers / Controllers</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t15')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t15')"><span class="nav-num"
+                        aria-hidden="true">15</span> CRUD Deep Dive</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t16')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t16')"><span class="nav-num"
+                        aria-hidden="true">16</span> REST Best Practices</div>
+                <div class="nav-section-label" role="presentation">Data & Storage</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t17')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t17')"><span class="nav-num"
+                        aria-hidden="true">17</span> Databases Practical</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t18')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t18')"><span class="nav-num"
+                        aria-hidden="true">18</span> Business Logic</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t19')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t19')"><span class="nav-num"
+                        aria-hidden="true">19</span> Caching</div>
+                <div class="nav-section-label" role="presentation">Background Systems</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t20')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t20')"><span class="nav-num"
+                        aria-hidden="true">20</span> Transactional Emails</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t21')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t21')"><span class="nav-num"
+                        aria-hidden="true">21</span> Task Queuing</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t22')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t22')"><span class="nav-num"
+                        aria-hidden="true">22</span> Elasticsearch</div>
+                <div class="nav-section-label" role="presentation">Operations</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t23')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t23')"><span class="nav-num"
+                        aria-hidden="true">23</span> Config Management</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t24')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t24')"><span class="nav-num"
+                        aria-hidden="true">24</span> Logging & Observability</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t25')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t25')"><span class="nav-num"
+                        aria-hidden="true">25</span> Graceful Shutdown</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t26')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t26')"><span class="nav-num"
+                        aria-hidden="true">26</span> Scaling & Performance</div>
+                <div class="nav-section-label" role="presentation">Advanced</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t27')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t27')"><span class="nav-num"
+                        aria-hidden="true">27</span> Concurrency</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t28')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t28')"><span class="nav-num"
+                        aria-hidden="true">28</span> Object Storage</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t29')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t29')"><span class="nav-num"
+                        aria-hidden="true">29</span> Realtime Systems</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t30')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t30')"><span class="nav-num"
+                        aria-hidden="true">30</span> Testing & Quality</div>
+                <div class="nav-section-label" role="presentation">Standards</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t31')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t31')"><span class="nav-num"
+                        aria-hidden="true">31</span> 12-Factor App</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t32')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t32')"><span class="nav-num"
+                        aria-hidden="true">32</span> OpenAPI</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t33')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t33')"><span class="nav-num"
+                        aria-hidden="true">33</span> Webhooks</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('t34')"
+                    onkeydown="if(event.key==='Enter')scrollTo2('t34')"><span class="nav-num"
+                        aria-hidden="true">34</span> DevOps</div>
+            </div>
+        </nav>
+
+        <!-- ── MAIN ── -->
+        <main class="main" id="main-content">
+            <div class="progress-wrap" role="progressbar" aria-label="Page scroll progress" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="100">
+                <div id="progress-bar"></div>
+            </div>
+
+            <header class="page-header">
+                <div class="header-controls">
+                    <div>
+                        <div class="eyebrow">// backend-mastery · v0 · combined edition</div>
+                        <h1>Backend &<br><span>Mastery</span></h1>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme"
+                        title="Toggle theme">
+                        <span class="icon-sun" aria-hidden="true">🌙</span>
+                        <span class="icon-moon" aria-hidden="true">🔆</span>
+                    </button>
+                </div>
+                <p><strong style="color:var(--accent)">Roadmap</strong>
+                    (ordered by when to learn, with real-world context) and the <strong
+                        style="color:var(--accent)">Knowledge Map</strong> (Deep-dive topics with concepts,
+                    subtopics, use-cases, pitfalls, and cross-connections).</p>
+                <div class="stats-row" aria-label="Content statistics">
+                    <div>
+                        <div class="stat-num" id="stat-total" aria-label="Total topics">0</div>
+                        <div class="stat-label">Topics</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--basic)" id="stat-b"
+                            aria-label="Foundation level topics">0</div>
+                        <div class="stat-label">Foundation</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--medium)" id="stat-m"
+                            aria-label="Core/Medium level topics">0</div>
+                        <div class="stat-label">Core / Medium</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--advanced)" id="stat-a"
+                            aria-label="Advanced level topics">0</div>
+                        <div class="stat-label">Advanced</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── ROADMAP VIEW ── -->
+            <section id="roadmap-view" aria-label="Learning Roadmap">
+                <div class="legend" aria-hidden="true">
+                    <div class="legend-item">
+                        <div class="ldot foundation"></div>Basic
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot core"></div>Medium
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot advanced"></div>Advanced
+                    </div>
+                    <div style="margin-left:auto;font-size:0.68rem;color:var(--muted)">Click any card to see why it
+                        matters</div>
+                </div>
+                <div class="filter-bar" role="group" aria-label="Filter by level">
+                    <button class="filter-btn active" data-filter="all" onclick="filterRoadmap('all',this)">All</button>
+                    <button class="filter-btn" data-filter="basic" onclick="filterRoadmap('basic',this)">Basic</button>
+                    <button class="filter-btn" data-filter="medium"
+                        onclick="filterRoadmap('medium',this)">Medium</button>
+                    <button class="filter-btn" data-filter="advanced"
+                        onclick="filterRoadmap('advanced',this)">Advanced</button>
+                </div>
+                <div id="roadmap-container" role="feed" aria-label="Roadmap cards"></div>
+                <aside class="intro-footer">
+                    <strong>The Pattern:</strong> Build the URL shortener. Evolve it through every phase.<br>
+                    Feel the pain of no index, no cache, no queue — then understand why each solution exists.<br>
+                    The struggle is the learning. Don't skip stages.
+                </aside>
+            </section>
+
+            <!-- ── KNOWLEDGE MAP VIEW ── -->
+            <section id="map-view" class="hidden" aria-label="Knowledge Map">
+                <div class="legend" aria-hidden="true">
+                    <div class="legend-item">
+                        <div class="ldot foundation"></div>Foundation
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot core"></div>Core
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot advanced"></div>Advanced
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot expert"></div>Expert
+                    </div>
+                    <div style="margin-left:auto;font-size:0.68rem;color:var(--muted)">Click any card header to expand
+                    </div>
+                </div>
+                <div class="filter-bar" role="group" aria-label="Filter by level">
+                    <button class="filter-btn active" data-filter2="all" onclick="filterMap('all',this)">All</button>
+                    <button class="filter-btn" data-filter2="Foundation"
+                        onclick="filterMap('Foundation',this)">Foundation</button>
+                    <button class="filter-btn" data-filter2="Core" onclick="filterMap('Core',this)">Core</button>
+                    <button class="filter-btn" data-filter2="Advanced"
+                        onclick="filterMap('Advanced',this)">Advanced</button>
+                    <button class="filter-btn" data-filter2="Expert" onclick="filterMap('Expert',this)">Expert</button>
+                </div>
+                <div id="map-container" role="feed" aria-label="Knowledge map cards"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ═══ SCRIPTS (bottom of body) ═══ -->
+
+    <!-- GSAP core (async load — animations are progressive enhancement) -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" async></script>
+
+    <!-- Data files -->
+    <script src="js/data/roadmap-data.js"></script>
+    <script src="js/data/map-data.js"></script>
+
+    <!-- Logic modules -->
+    <script src="js/tracker.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/render.js"></script>
+
+    <!-- Orchestration (must load last) -->
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
