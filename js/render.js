@@ -346,97 +346,85 @@ function renderRoadmap(filter = 'all', search = '') {
 // ── Render knowledge map ─────────────────────────────
 function renderMap(filterLevel = 'all', search = '') {
     const container = document.getElementById('map-container');
+    container.innerHTML = '';
 
     let t = 0, b = 0, m = 0, a = 0;
+
+    // Create grid wrapper
+    const grid = document.createElement('div');
+    grid.className = 'map-grid';
+    container.appendChild(grid);
 
     mapTopics.forEach(topic => {
         const levelMatch = filterLevel === 'all' || topic.level === filterLevel;
         const sq = !search || [topic.title, ...(topic.concepts || []), ...(topic.usecases || [])].some(s =>
             typeof s === 'string' && s.toLowerCase().includes(search)
         );
-
-        let el = document.getElementById('t' + topic.num);
-
-        if (!levelMatch || !sq) {
-            if (el) el.style.display = 'none';
-            return;
-        }
+        if (!levelMatch || !sq) return;
 
         t++;
         if (topic.level === 'Foundation') b++;
         else if (topic.level === 'Core') m++;
         else if (topic.level === 'Advanced') a++;
 
-        if (el) {
-            el.style.display = '';
-            return; // already rendered
-        }
-
         const lvClass = levelMap[topic.level] || 'lv-core';
         const slvMap = { b: 'slv-b', i: 'slv-i', a: 'slv-a' };
         const slvLabel = { b: 'B', i: 'I', a: 'A' };
 
-        el = document.createElement('div');
+        const el = document.createElement('div');
         el.className = 'topic-card';
         el.id = 't' + topic.num;
         el.setAttribute('role', 'region');
         el.setAttribute('aria-label', `Topic ${topic.num}: ${topic.title}`);
 
-        const subHtml = (topic.subtopics || []).map(([lv, text]) =>
-            `<li><span class="${slvMap[lv] || ''}" aria-label="${lv === 'b' ? 'Beginner' : lv === 'i' ? 'Intermediate' : 'Advanced'}">${slvLabel[lv] || lv}</span>${text}</li>`
-        ).join('');
-
-        const connHtml = (topic.connections || []).map(c =>
-            `<button class="conn-tag" onclick="jumpToTopic('${c}')" aria-label="Jump to topic: ${c}">${c}</button>`
-        ).join('');
-
         el.innerHTML = `
-            <div class="topic-header" role="button" tabindex="0"
-                 aria-expanded="false" aria-controls="tbody-${topic.num}"
-                 onclick="toggleCard('t${topic.num}')"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCard('t${topic.num}')}">
-                <div class="topic-icon" aria-hidden="true">${topic.icon}</div>
-                <div class="topic-meta">
-                    <div class="topic-num">// topic-${String(topic.num).padStart(2, '0')}</div>
-                    <div class="topic-title">${topic.title}</div>
-                </div>
-                <span class="topic-lv ${lvClass}">${topic.level}</span>
-                <span class="topic-chevron" aria-hidden="true">▾</span>
-            </div>
-            <div class="topic-body" id="tbody-${topic.num}" role="region">
-                <div class="tb-section">
-                    <div class="tb-label">Core Concepts</div>
-                    <ul class="concept-list">${(topic.concepts || []).map(c => `<li>${c}</li>`).join('')}</ul>
-                    <div class="tb-label">Subtopics</div>
-                    <ul class="subtopic-list">${subHtml}</ul>
-                </div>
-                <div class="tb-section">
-                    <div class="tb-label">Real-World Use Cases</div>
-                    <ul class="usecase-list">${(topic.usecases || []).map(u => `<li>${u}</li>`).join('')}</ul>
-                    <div class="tb-label">Principles</div>
-                    <ul class="principle-list">${(topic.principles || []).map(p => `<li>${p}</li>`).join('')}</ul>
-                    <div class="tb-label">Pitfalls</div>
-                    <ul class="pitfall-list">${(topic.pitfalls || []).map(p => `<li>${p}</li>`).join('')}</ul>
-                    <div class="tb-label">Connections</div>
-                    <div class="connections-list">${connHtml}</div>
+            <button class="topic-header" onclick="toggleCard('t${topic.num}')"
+                    aria-expanded="false" aria-controls="topic-body-${topic.num}">
+                <span class="topic-num">${String(topic.num).padStart(2, '0')}</span>
+                
+                <span class="topic-title">${topic.title}</span>
+                <span class="level-badge ${lvClass}">${topic.level}</span>
+                <span class="chevron" aria-hidden="true">▼</span>
+            </button>
+            <div class="topic-body" id="topic-body-${topic.num}" role="region">
+                <div class="sections-grid">
+                    <div class="section">
+                        <div class="section-label sl-concepts">◆ Core Concepts</div>
+                        <ul>${(topic.concepts || []).map(c => `<li>${c}</li>`).join('')}</ul>
+                    </div>
+                    <div class="section">
+                        <div class="section-label sl-subtopics">▶ Subtopics (B→A)</div>
+                        <ul>${(topic.subtopics || []).map(([l, s]) => `<li><span class="slv ${slvMap[l]}">${slvLabel[l]}</span>${s}</li>`).join('')}</ul>
+                    </div>
+                    <div class="section">
+                        <div class="section-label sl-usecases">◈ Real-World Use Cases</div>
+                        <ul>${(topic.usecases || []).map(u => `<li>${u}</li>`).join('')}</ul>
+                    </div>
+                    <div class="section">
+                        <div class="section-label sl-principles">◉ Key Principles</div>
+                        <ul>${(topic.principles || []).map(p => `<li>${p}</li>`).join('')}</ul>
+                    </div>
+                    <div class="section">
+                        <div class="section-label sl-pitfalls">✗ Common Pitfalls</div>
+                        <ul>${(topic.pitfalls || []).map(p => `<li class="pitfall-item">${p}</li>`).join('')}</ul>
+                    </div>
+                    <div class="section">
+                        <div class="section-label sl-connections">⟳ Connects To</div>
+                        <div>${(topic.connections || []).map(c => `<button class="conn-tag" onclick="jumpToTopic('${c}')" aria-label="Jump to topic: ${c}">${c}</button>`).join('')}</div>
+                    </div>
                 </div>
             </div>
         `;
 
-        container.appendChild(el);
+        grid.appendChild(el);
         observeForReveal(el);
     });
 
-    if (!container.children.length || [...container.children].every(c => c.style.display === 'none')) {
-        if (!container.querySelector('.no-results')) {
-            const msg = document.createElement('div');
-            msg.className = 'no-results';
-            msg.textContent = 'No topics match your search.';
-            container.appendChild(msg);
-        }
-    } else {
-        const noRes = container.querySelector('.no-results');
-        if (noRes) noRes.remove();
+    if (!grid.children.length) {
+        const msg = document.createElement('div');
+        msg.className = 'no-results';
+        msg.textContent = 'No topics match your search.';
+        container.appendChild(msg);
     }
 
     animateStatTo(document.getElementById('stat-total'), t);

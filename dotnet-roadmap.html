@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.NET Developer Roadmap 2025</title>
+    <meta name="description" content="The complete learning path for modern .NET backend developers.">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Theme: apply before paint to avoid flash -->
+    <script src="js/theme.js"></script>
+</head>
+
+<body>
+
+    <!-- Skip to content (accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Mobile hamburger toggle -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false"
+        aria-controls="sidebar">
+        <span class="hamburger-line" aria-hidden="true"></span>
+        <span class="hamburger-line" aria-hidden="true"></span>
+        <span class="hamburger-line" aria-hidden="true"></span>
+    </button>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- Side scroll tracker -->
+    <nav class="tracker" id="tracker" aria-label="Section progress tracker"></nav>
+
+    <div class="app">
+
+        <!-- ── SIDEBAR ── -->
+        <nav class="sidebar" id="sidebar" aria-label="Site navigation">
+            <div class="sidebar-top">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2>Navigation</h2>
+                    <a href="index.html" title="Back to Hub"
+                        style="color:var(--muted); text-decoration:none; font-size:0.8rem;">🏠 Hub</a>
+                </div>
+                <label for="search" class="sr-only">Search topics</label>
+                <input type="search" id="search" placeholder="Search topics..." autocomplete="off"
+                    aria-label="Search topics">
+                <div class="view-switcher" role="group" aria-label="View switcher" style="display:none;">
+                    <button class="view-btn active" data-view="roadmap" aria-pressed="true"
+                        onclick="switchView('roadmap', this)">Roadmap</button>
+                    <button class="view-btn" data-view="map" aria-pressed="false"
+                        onclick="switchView('map', this)">Knowledge Map</button>
+                </div>
+            </div>
+
+            <!-- Roadmap Nav -->
+            <div id="roadmap-nav" role="list" aria-label="Roadmap phases">
+                <div class="nav-section-label" role="presentation">Core</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp1')"><span class="nav-num"
+                        aria-hidden="true">01</span> C# & Ecosystem</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp2')"><span class="nav-num"
+                        aria-hidden="true">02</span> Dev Skills</div>
+                <div class="nav-section-label" role="presentation">Web & Data</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp3')"><span class="nav-num"
+                        aria-hidden="true">03</span> ASP.NET Core</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp4')"><span class="nav-num"
+                        aria-hidden="true">04</span> Client-side</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp5')"><span class="nav-num"
+                        aria-hidden="true">05</span> Databases</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp6')"><span class="nav-num"
+                        aria-hidden="true">06</span> ORMs</div>
+                <div class="nav-section-label" role="presentation">Architecture</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp7')"><span class="nav-num"
+                        aria-hidden="true">07</span> Testing</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp8')"><span class="nav-num"
+                        aria-hidden="true">08</span> Logging</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp9')"><span class="nav-num"
+                        aria-hidden="true">09</span> Communication</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp10')"><span class="nav-num"
+                        aria-hidden="true">10</span> Background Tasks</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp11')"><span class="nav-num"
+                        aria-hidden="true">11</span> Caching</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp12')"><span class="nav-num"
+                        aria-hidden="true">12</span> Observability</div>
+                <div class="nav-section-label" role="presentation">Deployment & Advanced</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp13')"><span class="nav-num"
+                        aria-hidden="true">13</span> Containerization</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp14')"><span class="nav-num"
+                        aria-hidden="true">14</span> Cloud</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp15')"><span class="nav-num"
+                        aria-hidden="true">15</span> CI / CD</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp16')"><span class="nav-num"
+                        aria-hidden="true">16</span> AI & ML</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('rp17')"><span class="nav-num"
+                        aria-hidden="true">17</span> .NET Libraries</div>
+            </div>
+
+            <!-- Knowledge Map Nav (Hidden string for app.js) -->
+            <div id="map-nav" class="hidden" role="list" aria-label="Knowledge map topics">
+            </div>
+        </nav>
+
+        <!-- ── MAIN ── -->
+        <main class="main" id="main-content">
+            <div class="progress-wrap" role="progressbar" aria-label="Page scroll progress" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="100">
+                <div id="progress-bar"></div>
+            </div>
+
+            <header class="page-header">
+                <div class="header-controls">
+                    <div>
+                        <div class="eyebrow">// DevMastery Hub · Path 01</div>
+                        <h1><span>.NET Backend Architecture</span></h1>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme"
+                        title="Toggle theme">
+                        <span class="icon-sun" aria-hidden="true">🌙</span>
+                        <span class="icon-moon" aria-hidden="true">🔆</span>
+                    </button>
+                </div>
+                <p>The definitive journey from <strong style="color:var(--accent)">C# basics</strong> to advanced
+                    <strong style="color:var(--accent)">Microservices, Cloud, and AI integration</strong>.
+                    Master the enterprise standard, module by module.</p>
+                <div class="stats-row" aria-label="Content statistics">
+                    <div>
+                        <div class="stat-num" id="stat-total" aria-label="Total topics">0</div>
+                        <div class="stat-label">Modules</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--basic)" id="stat-b"
+                            aria-label="Foundation level topics">0</div>
+                        <div class="stat-label">Foundation</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--medium)" id="stat-m"
+                            aria-label="Core/Medium level topics">0</div>
+                        <div class="stat-label">Core / Medium</div>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:var(--advanced)" id="stat-a"
+                            aria-label="Advanced level topics">0</div>
+                        <div class="stat-label">Advanced</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── ROADMAP VIEW ── -->
+            <section id="roadmap-view" aria-label="Learning Roadmap">
+                <div class="legend" aria-hidden="true">
+                    <div class="legend-item">
+                        <div class="ldot foundation"></div>Basic
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot core"></div>Medium
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot advanced"></div>Advanced
+                    </div>
+                    <div class="legend-item">
+                        <div class="ldot expert"></div>Expert
+                    </div>
+                    <div style="margin-left:auto;font-size:0.68rem;color:var(--muted)">Click any card to see why it
+                        matters</div>
+                </div>
+                <div class="filter-bar" role="group" aria-label="Filter by level">
+                    <button class="filter-btn active" data-filter="all" onclick="filterRoadmap('all',this)">All</button>
+                    <button class="filter-btn" data-filter="basic" onclick="filterRoadmap('basic',this)">Basic</button>
+                    <button class="filter-btn" data-filter="medium"
+                        onclick="filterRoadmap('medium',this)">Medium</button>
+                    <button class="filter-btn" data-filter="advanced"
+                        onclick="filterRoadmap('advanced',this)">Advanced</button>
+                    <button class="filter-btn" data-filter="expert"
+                        onclick="filterRoadmap('expert',this)">Expert</button>
+                </div>
+                <div id="roadmap-container" role="feed" aria-label="Roadmap cards"></div>
+            </section>
+
+            <!-- ── KNOWLEDGE MAP VIEW (Hidden but needed by app.js) ── -->
+            <section id="map-view" class="hidden" aria-label="Knowledge Map">
+                <div id="map-container" role="feed" aria-label="Knowledge map cards"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ═══ SCRIPTS (bottom of body) ═══ -->
+
+    <!-- GSAP core (async load) -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" async></script>
+
+    <!-- Data files (.NET specific) -->
+    <script src="js/data/dotnet-roadmap-data.js"></script>
+
+    <!-- Logic modules -->
+    <script src="js/tracker.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/render.js"></script>
+
+    <!-- Orchestration -->
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
