@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>.NET Developer Roadmap 2025</title>
+    <title>Dotnet Development</title>
     <meta name="description" content="The complete learning path for modern .NET backend developers.">
 
     <!-- Fonts -->
@@ -17,6 +17,7 @@
 
     <!-- Theme: apply before paint to avoid flash -->
     <script src="js/theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -43,15 +44,11 @@
         <!-- ── SIDEBAR ── -->
         <nav class="sidebar" id="sidebar" aria-label="Site navigation">
             <div class="sidebar-top">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2>Navigation</h2>
-                    <a href="index.html" title="Back to Hub"
-                        style="color:var(--muted); text-decoration:none; font-size:0.8rem;">🏠 Hub</a>
-                </div>
+                <h2>Navigation</h2>
                 <label for="search" class="sr-only">Search topics</label>
                 <input type="search" id="search" placeholder="Search topics..." autocomplete="off"
                     aria-label="Search topics">
-                <div class="view-switcher" role="group" aria-label="View switcher" style="display:none;">
+                <div class="view-switcher" role="group" aria-label="View switcher">
                     <button class="view-btn active" data-view="roadmap" aria-pressed="true"
                         onclick="switchView('roadmap', this)">Roadmap</button>
                     <button class="view-btn" data-view="map" aria-pressed="false"
@@ -101,8 +98,46 @@
                         aria-hidden="true">17</span> .NET Libraries</div>
             </div>
 
-            <!-- Knowledge Map Nav (Hidden string for app.js) -->
+            <!-- Knowledge Map Nav -->
             <div id="map-nav" class="hidden" role="list" aria-label="Knowledge map topics">
+                <div class="nav-section-label" role="presentation">Core</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-csharp')"><span
+                        class="nav-num" aria-hidden="true">01</span> C#</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-general')"><span
+                        class="nav-num" aria-hidden="true">02</span> General Dev Skills</div>
+                <div class="nav-section-label" role="presentation">Web & Data</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-aspnet')"><span
+                        class="nav-num" aria-hidden="true">03</span> ASP.NET Core</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-client')"><span
+                        class="nav-num" aria-hidden="true">04</span> Client-side .NET</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-db')"><span class="nav-num"
+                        aria-hidden="true">05</span> Databases</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-orm')"><span class="nav-num"
+                        aria-hidden="true">06</span> ORM</div>
+                <div class="nav-section-label" role="presentation">Architecture</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-testing')"><span
+                        class="nav-num" aria-hidden="true">07</span> Testing</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-logging')"><span
+                        class="nav-num" aria-hidden="true">08</span> Logging</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-communication')"><span
+                        class="nav-num" aria-hidden="true">09</span> Communication</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-background')"><span
+                        class="nav-num" aria-hidden="true">10</span> Background Tasks</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-caching')"><span
+                        class="nav-num" aria-hidden="true">11</span> Caching</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-observability')"><span
+                        class="nav-num" aria-hidden="true">12</span> Observability</div>
+                <div class="nav-section-label" role="presentation">Deployment & Advanced</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-containers')"><span
+                        class="nav-num" aria-hidden="true">13</span> Containerization</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-cloud')"><span class="nav-num"
+                        aria-hidden="true">14</span> Cloud</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-cicd')"><span class="nav-num"
+                        aria-hidden="true">15</span> CI / CD</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-ai')"><span class="nav-num"
+                        aria-hidden="true">16</span> AI & ML</div>
+                <div class="nav-item" role="listitem" tabindex="0" onclick="scrollTo2('sc-libraries')"><span
+                        class="nav-num" aria-hidden="true">17</span> .NET Libraries</div>
             </div>
         </nav>
 
@@ -117,38 +152,46 @@
                 <div class="header-controls">
                     <div>
                         <div class="eyebrow">// DevMastery Hub · Path 01</div>
-                        <h1><span>.NET Backend Architecture</span></h1>
+                        <h2><span>Dotnet Development</span></h2>
                     </div>
-                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme"
-                        title="Toggle theme">
-                        <span class="icon-sun" aria-hidden="true">🌙</span>
-                        <span class="icon-moon" aria-hidden="true">🔆</span>
-                    </button>
+                    <div class="header-actions">
+                        <a class="header-jump" href="index.html" title="Open the system design concepts page">
+                            <span class="header-jump-title">System Design</span>
+                            <span class="header-jump-note">Click here to view system design concepts</span>
+                        </a>
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme"
+                            title="Toggle theme">
+                            <span class="icon-sun" aria-hidden="true">🌙</span>
+                            <span class="icon-moon" aria-hidden="true">🔆</span>
+                        </button>
+                    </div>
                 </div>
                 <p>The definitive journey from <strong style="color:var(--accent)">C# basics</strong> to advanced
                     <strong style="color:var(--accent)">Microservices, Cloud, and AI integration</strong>.
-                    Master the enterprise standard, module by module.</p>
+                    Master the enterprise standard, module by module.
+                </p>
                 <div class="stats-row" aria-label="Content statistics">
-                    <div>
+                    <div id="stat-item-total">
                         <div class="stat-num" id="stat-total" aria-label="Total topics">0</div>
                         <div class="stat-label">Modules</div>
                     </div>
-                    <div>
+                    <div id="stat-item-b">
                         <div class="stat-num" style="color:var(--basic)" id="stat-b"
                             aria-label="Foundation level topics">0</div>
                         <div class="stat-label">Foundation</div>
                     </div>
-                    <div>
+                    <div id="stat-item-m">
                         <div class="stat-num" style="color:var(--medium)" id="stat-m"
                             aria-label="Core/Medium level topics">0</div>
                         <div class="stat-label">Core / Medium</div>
                     </div>
-                    <div>
+                    <div id="stat-item-a">
                         <div class="stat-num" style="color:var(--advanced)" id="stat-a"
                             aria-label="Advanced level topics">0</div>
                         <div class="stat-label">Advanced</div>
                     </div>
                 </div>
+                <p id="dotnet-map-stat-note" class="stats-note hidden">Knowledge map counts are flexible here because this view uses search, not level filters.</p>
             </header>
 
             <!-- ── ROADMAP VIEW ── -->
@@ -182,7 +225,7 @@
                 <div id="roadmap-container" role="feed" aria-label="Roadmap cards"></div>
             </section>
 
-            <!-- ── KNOWLEDGE MAP VIEW (Hidden but needed by app.js) ── -->
+            <!-- ── KNOWLEDGE MAP VIEW ── -->
             <section id="map-view" class="hidden" aria-label="Knowledge Map">
                 <div id="map-container" role="feed" aria-label="Knowledge map cards"></div>
             </section>
@@ -196,6 +239,7 @@
 
     <!-- Data files (.NET specific) -->
     <script src="js/data/dotnet-roadmap-data.js"></script>
+    <script src="js/data/dotnet-map-data.js"></script>
 
     <!-- Logic modules -->
     <script src="js/tracker.js"></script>

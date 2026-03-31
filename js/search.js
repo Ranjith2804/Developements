@@ -37,5 +37,25 @@ function filterMap(f, btn) {
 
 function scrollTo2(id) {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!el) return;
+
+    // In the knowledge map, sidebar clicks are more useful as "open this card"
+    // actions because the collapsed cards already fit on screen.
+    if (el.classList.contains('topic-card')) {
+        const isOpen = el.classList.contains('open');
+
+        if (typeof toggleCard === 'function') {
+            toggleCard(id);
+        }
+
+        if (!isOpen) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const header = el.querySelector('.topic-header');
+            if (header) header.focus({ preventScroll: true });
+        }
+
+        return;
+    }
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

@@ -381,7 +381,6 @@ function renderMap(filterLevel = 'all', search = '') {
             <button class="topic-header" onclick="toggleCard('t${topic.num}')"
                     aria-expanded="false" aria-controls="topic-body-${topic.num}">
                 <span class="topic-num">${String(topic.num).padStart(2, '0')}</span>
-                
                 <span class="topic-title">${topic.title}</span>
                 <span class="level-badge ${lvClass}">${topic.level}</span>
                 <span class="chevron" aria-hidden="true">▼</span>
@@ -475,11 +474,189 @@ function updateProgress() {
     }
 }
 
+// ── Color helper: hex → rgba ─────────────────────────
+function hexToRgba(hex, alpha) {
+    const n = hex.replace('#', '');
+    const v = parseInt(n.length === 3 ? n.split('').map(c => c + c).join('') : n, 16);
+    return `rgba(${(v >> 16) & 255},${(v >> 8) & 255},${v & 255},${alpha})`;
+}
+
+// ── Render .NET knowledge map (section cards) ────────
+function renderDotnetMap(search = '') {
+    if (typeof dotnetMapSections === 'undefined') return;
+
+    const container = document.getElementById('map-container');
+    container.innerHTML = '';
+    const totalPhases = dotnetMapSections.length;
+    let visibleSubsectionCount = 0;
+
+    // Legend row
+    const legend = document.createElement('div');
+    legend.className = 'map-legend-row';
+    legend.innerHTML = `
+        <span class="legend-chip legend-must">Must know</span>
+        <span class="legend-chip legend-nice">Nice to know</span>
+        <div style="margin-left:auto;font-size:0.68rem;color:var(--muted)">Click subsection buttons to explore topics</div>
+    `;
+    container.appendChild(legend);
+
+    // Card list wrapper
+    const list = document.createElement('div');
+    list.className = 'section-card-list';
+    container.appendChild(list);
+
+    const sq = search.toLowerCase().trim();
+
+    dotnetMapSections.forEach((section, sIdx) => {
+        // Search filter — match section label, subsection labels, or topic labels
+        if (sq) {
+            const matchSection = section.label.toLowerCase().includes(sq);
+            const matchSub = section.subsections.some(sub =>
+                sub.label.toLowerCase().includes(sq) ||
+                sub.topics.some(t => t.label.toLowerCase().includes(sq))
+            );
+            if (!matchSection && !matchSub) return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'section-card';
+        card.id = 'sc-' + section.id;
+        card.style.transitionDelay = `${sIdx * 40}ms`;
+
+        const color = section.color;
+
+        // ── Header row
+        const hd = document.createElement('div');
+        hd.className = 'section-hd';
+        hd.style.background = hexToRgba(color, 0.07);
+        hd.style.borderBottomColor = hexToRgba(color, 0.16);
+        hd.innerHTML = `
+            <span class="section-num" style="background:${color}">${section.number}</span>
+            <i data-lucide="${section.iconName}" class="s-icon" style="color:${color}; width: 17px; height: 17px; margin-right: 2px;"></i>
+            <span class="section-label">${section.label}</span>
+            <span class="section-meta">${section.subsections.length} sections</span>
+        `;
+        card.appendChild(hd);
+
+        // Track open subsections per card
+        const openSubs = new Set();
+
+        // ── Subsection buttons
+        const btnsWrap = document.createElement('div');
+        btnsWrap.className = 'section-btns';
+
+        // ── Panel animation wrappers
+        const panelsWrap = document.createElement('div');
+        panelsWrap.className = 'sc-panels-wrap';
+
+        section.subsections.forEach(sub => {
+            // Filter subsections during search
+            if (sq) {
+                const matchSub = sub.label.toLowerCase().includes(sq);
+                const matchTopics = sub.topics.some(t => t.label.toLowerCase().includes(sq));
+                if (!matchSub && !matchTopics && !section.label.toLowerCase().includes(sq)) return;
+            }
+
+            visibleSubsectionCount++;
+
+            // Button
+            const btn = document.createElement('button');
+            btn.className = 'subsection-btn';
+            btn.style.background = 'var(--surface)';
+            btn.style.borderColor = hexToRgba(color, 0.28);
+            btn.style.color = 'var(--text2)';
+
+            btn.innerHTML = `
+                <span class="subsection-dot" style="background:${color}"></span>
+                <span>${sub.label}</span>
+                ${sub.topics.length > 0 ? `<span class="subsection-count" style="background:${hexToRgba(color, 0.1)};color:${color}">${sub.topics.length}</span>` : ''}
+            `;
+
+            // Panel
+            const panelAnim = document.createElement('div');
+            panelAnim.className = 'sc-panel-anim';
+            panelAnim.innerHTML = `
+                <div class="sc-panel-inner">
+                    <div class="sc-panel-body" style="border-top-color:${hexToRgba(color, 0.14)};background:${hexToRgba(color, 0.035)}">
+                        <div class="sc-panel-hd">
+                            <span style="color:${color}">${sub.label}</span>
+                            ${sub.topics.length > 0 ? `<span class="sc-panel-count" style="background:${hexToRgba(color, 0.1)};color:${color}">${sub.topics.length} topics</span>` : ''}
+                        </div>
+                        ${sub.topics.length > 0
+                            ? `<div class="sc-chip-grid">${sub.topics.map(t =>
+                                `<span class="sc-chip sc-chip-${t.status === 'must-know' ? 'must' : 'nice'}" style="border-color:${hexToRgba(color, t.status === 'must-know' ? 0.42 : 0.22)}">${t.label}</span>`
+                              ).join('')}</div>`
+                            : '<p class="sc-panel-empty">Topics being mapped for this section…</p>'}
+                    </div>
+                </div>
+            `;
+
+            // Toggle handler
+            btn.addEventListener('click', () => {
+                const isOpen = openSubs.has(sub.id);
+                if (isOpen) {
+                    openSubs.delete(sub.id);
+                    panelAnim.classList.remove('sc-panel-open');
+                    btn.style.background = 'var(--surface)';
+                    btn.style.borderColor = hexToRgba(color, 0.28);
+                    btn.style.color = 'var(--text2)';
+                    // Reset dot and count
+                    btn.querySelector('.subsection-dot').style.background = color;
+                    const countEl = btn.querySelector('.subsection-count');
+                    if (countEl) {
+                        countEl.style.background = hexToRgba(color, 0.1);
+                        countEl.style.color = color;
+                    }
+                } else {
+                    openSubs.add(sub.id);
+                    panelAnim.classList.add('sc-panel-open');
+                    btn.style.background = color;
+                    btn.style.borderColor = color;
+                    btn.style.color = '#fff';
+                    btn.querySelector('.subsection-dot').style.background = 'rgba(255,255,255,0.55)';
+                    const countEl = btn.querySelector('.subsection-count');
+                    if (countEl) {
+                        countEl.style.background = 'rgba(255,255,255,0.22)';
+                        countEl.style.color = '#fff';
+                    }
+                }
+            });
+
+            btnsWrap.appendChild(btn);
+            panelsWrap.appendChild(panelAnim);
+        });
+
+        card.appendChild(btnsWrap);
+        card.appendChild(panelsWrap);
+        list.appendChild(card);
+        observeForReveal(card);
+    });
+
+    if (!list.children.length) {
+        const msg = document.createElement('div');
+        msg.className = 'no-results';
+        msg.textContent = 'No sections match your search.';
+        container.appendChild(msg);
+    }
+
+    animateStatTo(document.getElementById('stat-total'), totalPhases);
+    animateStatTo(document.getElementById('stat-b'), visibleSubsectionCount);
+    animateStatTo(document.getElementById('stat-m'), 0);
+    animateStatTo(document.getElementById('stat-a'), 0);
+
+    // Render icons
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+}
+
 // ── Exports (global for inline event handlers) ───────
 window.toggleCard = toggleCard;
 window.jumpToTopic = jumpToTopic;
 window.renderRoadmap = renderRoadmap;
 window.renderMap = renderMap;
+window.renderDotnetMap = renderDotnetMap;
 window.animateHeroTitle = animateHeroTitle;
 window.initParallax = initParallax;
 window.initProgressBar = initProgressBar;
+

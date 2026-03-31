@@ -273,6 +273,70 @@ body::after {
     font-family: 'Syne', sans-serif;
 }
 
+.header-actions {
+    display: block;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.header-jump {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    max-width: 190px;
+    padding: 8px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    background: var(--surface2);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    position: absolute;
+    top: 42px;
+    right: 290px;
+    z-index: 1;
+}
+
+.header-jump:hover {
+    border-color: var(--accent);
+    background: var(--surface3);
+    transform: translateY(-1px);
+}
+
+.header-jump:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.header-jump-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+    text-align: center;
+}
+
+.header-jump-note {
+    font-size: 0.62rem;
+    color: var(--text2);
+    line-height: 1.45;
+    text-align: center;
+}
+
+.page-header>p,
+.page-header>.stats-row {
+    max-width: 800px;
+}
+
+.header-actions .theme-toggle {
+    position: absolute;
+    top: 42px;
+    right: 0;
+    z-index: 2;
+}
+
 /* ── Mobile hamburger ── */
 .hamburger {
     display: none;
@@ -454,8 +518,10 @@ body::after {
 
 /* ── Page header ── */
 .page-header {
-    max-width: 800px;
+    max-width: none;
     margin-bottom: 36px;
+    position: relative;
+    padding-right: 240px;
     /* Reveal animation on load */
     animation: headerReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -478,6 +544,11 @@ body::after {
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 12px;
+    width: 100%;
+}
+
+.header-controls> :first-child {
+    max-width: 800px;
 }
 
 .eyebrow {
@@ -499,6 +570,21 @@ h1 {
 }
 
 h1 span {
+    color: var(--accent);
+    display: inline-block;
+}
+
+h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1rem, 3vw, 3rem);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--text);
+    /* Hero title split animation via JS/GSAP */
+    clip-path: inset(0 0 0 0);
+}
+
+h2 span {
     color: var(--accent);
     display: inline-block;
 }
@@ -572,6 +658,13 @@ h1 span {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-top: 2px;
+}
+
+.stats-note {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.6;
 }
 
 /* ── Legend / filters ── */
@@ -739,7 +832,7 @@ h1 span {
 .concept-card.open {
     position: relative;
     z-index: 400;
-    transform: scale(1.045) translateY(-4px) !important;
+    transform: translateY(-4px) !important;
     overflow: visible;
 }
 
@@ -750,12 +843,17 @@ h1 span {
 
 .concept-card.medium.open {
     border-color: var(--medium) !important;
-    box-shadow: 0 20px 60px rgba(117, 117, 117, 0.55), 0 0 0 1px var(--basic);
+    box-shadow: 0 20px 60px rgba(117, 117, 117, 0.55), 0 0 0 1px var(--medium);
 }
 
 .concept-card.advanced.open {
     border-color: var(--advanced) !important;
-    box-shadow: 0 20px 60px rgba(117, 117, 117, 0.55), 0 0 0 1px var(--basic);
+    box-shadow: 0 20px 60px rgba(117, 117, 117, 0.55), 0 0 0 1px var(--advanced);
+}
+
+.concept-card.expert.open {
+    border-color: #ffffff !important;
+    box-shadow: 0 20px 60px rgba(117, 117, 117, 0.55), 0 0 0 1px #ffffff;
 }
 
 .concept-card::before {
@@ -782,7 +880,7 @@ h1 span {
 }
 
 .concept-card:not(.open):hover {
-    transform: translateY(-3px) scale(1.01);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
     border-color: var(--border2);
 }
@@ -960,12 +1058,11 @@ h1 span {
 
 .topic-card:hover {
     border-color: var(--border2);
-    transform: translateY(-1px);
     box-shadow: var(--shadow-lg);
 }
 
 .topic-card.revealed:hover {
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 .topic-header {
@@ -1348,6 +1445,264 @@ h1 span {
     overflow: visible;
     clip: auto;
     white-space: normal;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section Card — .NET Knowledge Map view
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Map legend (must-know / nice-to-know) ── */
+.map-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-chip {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 99px;
+    letter-spacing: 0.02em;
+}
+
+.legend-must {
+    border: 1.5px solid var(--border2);
+    color: var(--text2);
+    background: var(--surface);
+}
+
+.legend-nice {
+    border: 1.5px dashed var(--muted);
+    color: var(--muted);
+    background: var(--surface);
+}
+
+/* ── Section card list ── */
+.section-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 900px;
+}
+
+/* ── Section card container ── */
+.section-card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    /* Scroll-triggered reveal */
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Section header row ── */
+.section-hd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 18px;
+    border-bottom: 1px solid transparent;
+}
+
+.section-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.01em;
+    font-family: 'Syne', sans-serif;
+}
+
+.section-label {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    font-family: 'Syne', sans-serif;
+}
+
+.section-meta {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* ── Subsection toggle buttons ── */
+.section-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 12px 18px 14px;
+}
+
+.subsection-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px 6px 9px;
+    border-radius: 9px;
+    border: 1.5px solid;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition: transform 0.14s ease,
+        box-shadow 0.14s ease,
+        background 0.14s ease,
+        border-color 0.14s ease,
+        color 0.14s ease;
+}
+
+.subsection-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
+}
+
+.subsection-btn:active {
+    transform: translateY(0);
+}
+
+.subsection-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.14s ease;
+}
+
+.subsection-count {
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 99px;
+    line-height: 1.4;
+    transition: background 0.14s ease, color 0.14s ease;
+}
+
+/* ── Panel animation (grid-template-rows trick) ── */
+.sc-panels-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.sc-panel-anim {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sc-panel-open {
+    grid-template-rows: 1fr;
+}
+
+.sc-panel-inner {
+    overflow: hidden;
+}
+
+/* ── Panel body content ── */
+.sc-panel-body {
+    padding: 13px 18px 16px;
+    border-top: 1px solid transparent;
+}
+
+.sc-panel-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 11px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.sc-panel-count {
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 99px;
+}
+
+/* ── Topic chips ── */
+.sc-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sc-chip {
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: 7px;
+    border: 1.5px solid;
+    color: var(--text);
+    background: var(--surface);
+    cursor: default;
+    line-height: 1.4;
+    transition: transform 0.11s ease, box-shadow 0.11s ease;
+}
+
+.sc-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px -3px rgba(0, 0, 0, 0.2);
+}
+
+.sc-chip-must {
+    border-style: solid;
+}
+
+.sc-chip-nice {
+    border-style: dashed;
+    color: var(--text2);
+}
+
+/* ── Empty placeholder ── */
+.sc-panel-empty {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    margin: 0;
+    padding: 2px 0;
+}
+
+/* ── Responsive: section cards ── */
+@media (max-width: 768px) {
+    .section-card-list {
+        max-width: 100%;
+    }
+
+    .section-btns {
+        gap: 5px;
+        padding: 10px 14px 12px;
+    }
+
+    .section-hd {
+        padding: 11px 14px;
+    }
+
+    .sc-panel-body {
+        padding: 11px 14px 14px;
+    }
 }
 
 /* ── Parallax grid: JS writes --parallax-offset via custom prop ── */

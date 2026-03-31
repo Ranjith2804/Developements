@@ -3,7 +3,7 @@
 const roadmapPhases = [
     {
         id: 'rp1', num: 'Phase 01', title: 'The Core — C# & The Ecosystem', timeline: 'Week 1-3', concepts: [
-            { name: 'C# 6 to 13 Features', level: 'basic', desc: 'Pattern matching, records, top-level statements, and modern C# constructs.', why: 'Modern C# is drastically different from C# 5. Knowing how to write concise, functional-first C# separates modern developers from legacy maintainers.' },
+            { name: 'C#  Features', level: 'basic', desc: 'Pattern matching, records, top-level statements, and modern C# constructs.', why: 'Modern C# is drastically different from C# 5. Knowing how to write concise, functional-first C# separates modern developers from legacy maintainers.' },
             { name: '.NET 9 vs Legacy', level: 'basic', desc: 'Understanding the unified .NET ecosystem versus legacy .NET Framework 4.8.', why: 'You will encounter legacy codebases. Understanding the migration paths and runtime differences is critical for enterprise modernization.' },
             { name: 'dotnet CLI & NuGet', level: 'basic', desc: 'Command-line scaffolding, building, publishing, and dependency management.', why: 'Visual Studio abstracts this, but CI/CD runs on the CLI. You must know how your code is built and packaged under the hood.' }
         ]
@@ -118,6 +118,3 @@ const roadmapPhases = [
     }
 ];
 
-// Empty stub for Map Topics to prevent render.js from breaking when switching views
-// Note: Handled implicitly in app.js setup, but we provide it just in case.
-const mapTopics = [];
